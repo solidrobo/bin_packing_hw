@@ -9,7 +9,12 @@ enable_testing()
 add_subdirectory(tests)
 
 # define source files
-add_executable(stoneridge_hw source/main.c source/main.h)
+add_executable(
+    stoneridge_hw 
+    source/main.c
+    source/util.c
+    source/util.h
+)
 
 # set build type
 set(CMAKE_BUILD_TYPE Debug)
