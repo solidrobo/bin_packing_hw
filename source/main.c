@@ -22,7 +22,7 @@ int main(   int argc, // Number of strings in array argv
    const char *filename = argv[1];
    FILE * fp = fopen(filename, "r");
    char file_buffer[100];  // max number of characters to be displayed is 10x10
-   String_t word_list[100]; // theoretical max number of words is also 10x10
+   char * word_list[100]; // theoretical max number of words is also 10x10
    size_t word_count=0;
 
    /*
@@ -37,8 +37,9 @@ int main(   int argc, // Number of strings in array argv
          printf("No words found!\n");
          return -1;
       }
+      
+      permute(word_list, 0, word_count-1);
 
-      qsort(word_list, word_count, sizeof(word_list[0]), str_comp_ascending); // sort strings according to length
 
       for(int x =10; x; x--){
          for(int y=10; y; y--){
@@ -61,7 +62,7 @@ int read_data(FILE * file, char buffer[], size_t buffer_len){
       do {  // read only the max number of characters able to be displayed 
          char data = fgetc(file);
          if( feof(file) ) {  // break if end of file reached
-            buffer[read_bytes]=NULL; // terminate buffer
+            buffer[read_bytes]='\0'; // terminate buffer
             break ;
          }
          
@@ -79,7 +80,7 @@ int read_data(FILE * file, char buffer[], size_t buffer_len){
    return read_bytes;
 }
 
-int find_words(char input_buffer[], String_t output_buffer[]){
+int find_words(char input_buffer[], char * output_buffer[]){
       size_t word_count=0;
       char *word = strtok(input_buffer, "\n");
       do{
@@ -88,25 +89,38 @@ int find_words(char input_buffer[], String_t output_buffer[]){
             printf("Word [%s] too long [%d]. Discarding...", word, len);
             break; 
          }
-         String_t * string = &output_buffer[word_count++];
-         string->str = word;
-         string->len = strlen(word);
-
+         output_buffer[word_count++] = word;
          word = strtok(NULL, "\n");
       }while (word);
 
       return word_count;
 }
 
-int str_comp_ascending(const void * a, const void *b){
-   size_t str_a_len = ((String_t *) a)->len;
-   size_t str_b_len = ((String_t *) b)->len;
-
-   if(str_a_len > str_b_len){
-      return -1;
+void permute(char * input[], int current_index, int array_len) 
+{  
+   int i;
+   if (current_index == array_len) 
+      update_score(input, array_len+1);
+   else
+   { 
+      for (i = current_index; i <= array_len; i++) 
+      { 
+         swap_index(input,current_index, i); 
+         permute(input, current_index+1, array_len); 
+         swap_index(input,current_index, i); 
+      } 
    } 
-   if(str_a_len < str_b_len){
-      return 1;
-   }
-   return 0;
+}
+
+void swap_index(char * array[], int index_a, int index_b){
+    char * temp = array[index_a];
+    array[index_a] = array[index_b];
+    array[index_b] = temp;
+    __asm("nop");    //debug breakpoint
+}
+
+void update_score (char * permutation[], size_t array_len){
+   for(int i=0; i< array_len; i++)
+      printf("%s ", permutation[i]);
+   printf("\n");
 }

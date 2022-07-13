@@ -1,3 +1,4 @@
 build/
 CMakeFiles/
 tests/*.exe
+.vscode/settings.json
