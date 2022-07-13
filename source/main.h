@@ -4,8 +4,13 @@
 #include <string.h>
 #include <stdlib.h>
 
+typedef struct {
+   char * str;
+   size_t len;
+} String_t;
+
 int read_data(FILE * file, char buffer[], size_t buffer_len);
-int str_len_comp(const char * a,const char *b);
-int find_words(char input_buffer[], char * output_buffer[]);
+int str_comp_ascending(const void* a, const void *b);
+int find_words(char input_buffer[], String_t output_buffer[]);
 
 #endif

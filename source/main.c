@@ -9,16 +9,26 @@ int main(   int argc, // Number of strings in array argv
    /*
       Input validation section 
    */
+
    if(argc > 2){
       printf("Illegal number of arguments [%d]. Please pass only the file path as an argument");
       return -1;
    }
 
+   /*
+      Variables section
+   */
+
    const char *filename = argv[1];
    FILE * fp = fopen(filename, "r");
    char file_buffer[100];  // max number of characters to be displayed is 10x10
-   char *word_list[100]; // theoretical max number of words is also 10x10
+   String_t word_list[100]; // theoretical max number of words is also 10x10
    size_t word_count=0;
+
+   /*
+      Logic section
+   */
+
    if(read_data(fp, file_buffer, sizeof(file_buffer))>0){ // populate buffer with sanitized data
       int row, col;
       
@@ -28,15 +38,7 @@ int main(   int argc, // Number of strings in array argv
          return -1;
       }
 
-      for(int i = 0; i<word_count; i++){
-         printf("% 3d word %s\n", i,word_list[i]);
-      }
-
-      qsort(word_list, word_count, sizeof(char*), str_len_comp);
-
-      for(int i = 0; i<word_count; i++){
-         printf("% 3d word %s\n", i,word_list[i]);
-      }
+      qsort(word_list, word_count, sizeof(word_list[0]), str_comp_ascending); // sort strings according to length
 
       for(int x =10; x; x--){
          for(int y=10; y; y--){
@@ -77,7 +79,7 @@ int read_data(FILE * file, char buffer[], size_t buffer_len){
    return read_bytes;
 }
 
-int find_words(char input_buffer[], char * output_buffer[]){
+int find_words(char input_buffer[], String_t output_buffer[]){
       size_t word_count=0;
       char *word = strtok(input_buffer, "\n");
       do{
@@ -86,25 +88,24 @@ int find_words(char input_buffer[], char * output_buffer[]){
             printf("Word [%s] too long [%d]. Discarding...", word, len);
             break; 
          }
+         String_t * string = &output_buffer[word_count++];
+         string->str = word;
+         string->len = strlen(word);
 
-         output_buffer[word_count++] = word;
-
-         printf("word %s\n", word);
          word = strtok(NULL, "\n");
       }while (word);
 
       return word_count;
 }
 
+int str_comp_ascending(const void * a, const void *b){
+   size_t str_a_len = ((String_t *) a)->len;
+   size_t str_b_len = ((String_t *) b)->len;
 
-int str_len_comp(const char * a, const char *b){
-   char * str_a = *(char**) a;
-   char * str_b = *(char**) b;
-
-   if(strlen(a) > strlen(b)){
+   if(str_a_len > str_b_len){
       return -1;
    } 
-   if (strlen(a) < strlen(b)){
+   if(str_a_len < str_b_len){
       return 1;
    }
    return 0;
