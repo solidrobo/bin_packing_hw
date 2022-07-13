@@ -1,6 +1,5 @@
 #include "main.h"
 
-
  
 packing_result_t best_packing = {.words = 0, .fill_level = 100, .empty_cells = 0, .first_empty_cell=0};
 
@@ -122,11 +121,9 @@ void update_score (char * permutation[], size_t array_len){
    int row_index=0;
 
    char current_packing[OUTPUT_ROWS][OUTPUT_COLS];
-
-   
    memset(current_packing, '+', sizeof(current_packing));
 
-   while(row_index<OUTPUT_ROWS && word_index < array_len){
+   while(row_index<OUTPUT_ROWS && word_index < array_len){     // pack permutation of string into cells 
       char * word = permutation[word_index++];
       int word_len = strlen(word);
       
@@ -141,30 +138,19 @@ void update_score (char * permutation[], size_t array_len){
 
    int current_empty_cells=count_empy_cells(current_packing);
    int current_first_empty_cell = strpbrk((const char *)current_packing, "+") - (char*)current_packing;
-   if(word_index >= best_packing.words){           //current packing has at least as many words as best
+   if(word_index >= best_packing.words){           // if current packing has at least as many words as best
       if(row_index <= best_packing.fill_level){    // and as good or lower fill level
          if(current_empty_cells >= best_packing.empty_cells){ // and same ammount of empty cells or better 
-            if(current_first_empty_cell > best_packing.first_empty_cell){
+            if(current_first_empty_cell > best_packing.first_empty_cell){ // and first empty cell is higher
                memcpy(best_packing.output, current_packing, sizeof(best_packing.output)); // save curren packing as best packing
                best_packing.empty_cells = current_empty_cells;
                best_packing.words = word_index;
                best_packing.fill_level = row_index;
                best_packing.first_empty_cell = current_first_empty_cell;
-
-               //print_output(best_packing.output);
             }
          }
       }
    }
-
-
-  //print_output(current_packing);
-
-#ifdef DEBUG
-   for(int i=0; i< array_len; i++)
-      printf("%s ", permutation[i]);
-   printf("\n");
-#endif
 }
 
 void print_output(char buffer[OUTPUT_COLS][OUTPUT_ROWS]){
@@ -172,7 +158,7 @@ void print_output(char buffer[OUTPUT_COLS][OUTPUT_ROWS]){
       for(int y= 0; y<OUTPUT_COLS; y++){
          printf("%c", buffer[x][y]);
       }
-      printf("\r\n");
+      printf("\n");
    }
 }
 
