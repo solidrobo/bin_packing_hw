@@ -3,7 +3,9 @@
 #include <stdlib.h>
 #include "util.h"
 
+// global variable to store current best result
 packing_result_t best_packing = {.words = 0, .fill_level = 100, .empty_cells = 0, .first_empty_cell=0};
+
 
 int read_data(FILE * file, char buffer[], size_t buffer_len){
    size_t read_bytes = 0;
@@ -11,7 +13,6 @@ int read_data(FILE * file, char buffer[], size_t buffer_len){
       do {  // read only the max number of characters able to be displayed 
          char data = fgetc(file);
          if( feof(file) ) {  // break if end of file reached
-            buffer[read_bytes]='\0'; // terminate buffer
             break ;
          }
          
@@ -21,6 +22,8 @@ int read_data(FILE * file, char buffer[], size_t buffer_len){
          else
             __asm("nop"); // discard non ascii data / debug breakpoint
       }while(read_bytes < buffer_len);
+      
+      buffer[read_bytes]='\0'; // terminate buffer
    } else { // return error otherwise
       perror("Error reading file! ");
       return -1;
@@ -28,6 +31,7 @@ int read_data(FILE * file, char buffer[], size_t buffer_len){
 
    return read_bytes;
 }
+
 
 int find_words(char input_buffer[], char * output_buffer[]){
       size_t word_count=0;
@@ -45,12 +49,14 @@ int find_words(char input_buffer[], char * output_buffer[]){
       return word_count;
 }
 
+
 void swap_index(char * array[], int index_a, int index_b){
     char * temp = array[index_a];
     array[index_a] = array[index_b];
     array[index_b] = temp;
     __asm("nop");    //debug breakpoint
 }
+
 
 void permute(char * input[], int current_index, int array_len) 
 {  
@@ -74,7 +80,7 @@ void update_score (char * permutation[], size_t array_len){
    int col_index=0;
    int row_index=0;
 
-   char current_packing[OUTPUT_ROWS][OUTPUT_COLS];
+   char current_packing[OUTPUT_ROWS][OUTPUT_COLS];             // create an "empty" output buffer
    memset(current_packing, '+', sizeof(current_packing));
 
    while(row_index<OUTPUT_ROWS && word_index < array_len){     // pack permutation of string into cells 
@@ -96,8 +102,8 @@ void update_score (char * permutation[], size_t array_len){
       (word_index >= best_packing.words) &&         // if current packing has at least as many words as best
       (row_index <= best_packing.fill_level) &&    // and as good or lower fill level
       (current_empty_cells >= best_packing.empty_cells) && // and same ammount of empty cells or better 
-      (current_first_empty_cell > best_packing.first_empty_cell) 
-      ){ // and first empty cell is higher
+      (current_first_empty_cell > best_packing.first_empty_cell) // and first empty cell is higher
+      ){ 
          memcpy(best_packing.output, current_packing, sizeof(best_packing.output)); // save curren packing as best packing
          best_packing.empty_cells = current_empty_cells;
          best_packing.words = word_index;
@@ -105,6 +111,7 @@ void update_score (char * permutation[], size_t array_len){
          best_packing.first_empty_cell = current_first_empty_cell;   
    }
 }
+
 
 void print_output(char buffer[OUTPUT_COLS][OUTPUT_ROWS]){
    for(int x = OUTPUT_ROWS-1; x>=0; x--){
@@ -114,6 +121,7 @@ void print_output(char buffer[OUTPUT_COLS][OUTPUT_ROWS]){
       printf("\n");
    }
 }
+
 
 int count_empy_cells(char buffer[OUTPUT_COLS][OUTPUT_ROWS]){
    int count=0;
