@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0.0)
-project(stoneridge_hw VERSION 0.1.0)
+project(bin_packing VERSION 0.1.0)
 
 # configure testing
 include(CTest)
@@ -10,7 +10,7 @@ add_subdirectory(tests)
 
 # define source files
 add_executable(
-    stoneridge_hw 
+    bin_packing 
     source/main.c
     source/util.c
     source/util.h

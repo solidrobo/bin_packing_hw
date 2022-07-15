@@ -18,6 +18,6 @@ add_test(
   NAME test_example_file 
   COMMAND ${Python_EXECUTABLE} 
   ${CMAKE_CURRENT_SOURCE_DIR}/test_standard.py 
-  $<TARGET_FILE:stoneridge_hw> 
+  $<TARGET_FILE:bin_packing> 
   ${CMAKE_CURRENT_SOURCE_DIR}/test1.txt
 )

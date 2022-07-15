@@ -22,4 +22,4 @@ To run tests run the following command inside the build folder:
 
 # Runing the application
 
-The build process will produce a binary called `stoneride_hw`. This binary will take as an input the path to a file. Up to at most 100 characters will be read from the file, while any line over 10 characters will be discarded and any non ASCII letter characters will also be discarded (e.g. the file should contain one word per line, max 10 characters long and in ASCII coding). 
+The build process will produce a binary called `bin_packing`. This binary will take as an input the path to a file - optinally an additional argument `-v` for verbose mode can be specified. Up to at most 100 characters will be read from the file, while any line over 10 characters will be discarded and words with any non ASCII letter characters will also be discarded (e.g. the file should contain one word per line, max 10 characters long and in ASCII coding). 
