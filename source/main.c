@@ -44,7 +44,7 @@ int main(   int argc, // Number of strings in array argv
 
       permute(word_list, 0, word_count-1); // find best packing by testing all permutations
 
-      print_output(best_packing.output);  // output best packing
+      print_output(best_packing.buffer);  // output best packing
       
    } else {
       return -1;

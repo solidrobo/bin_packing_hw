@@ -4,7 +4,7 @@
 #include "util.h"
 
 // global variable to store current best result
-packing_result_t best_packing = {.words = 0, .fill_level = 100, .empty_cells = 0, .first_empty_cell=0};
+packing_result_t best_packing;
 
 
 int read_data(FILE * file, char buffer[], size_t buffer_len){
@@ -109,13 +109,13 @@ void update_score (char * permutation[], size_t array_len){
          col_index = 0;
       } 
 
-      memcpy(&current_packing.output[row_index][col_index], word, word_len);
+      memcpy(&current_packing.buffer[row_index][col_index], word, word_len);
       col_index += word_len;
    }
 
    int empty_space_count = 0;
    for(int i=0; i<OUTPUT_ROWS; i++){
-      empty_space_count += count_empty_cells(current_packing.output[i], OUTPUT_COLS);
+      empty_space_count += count_empty_cells(current_packing.buffer[i], OUTPUT_COLS);
       current_packing.cummulative_empty_cells[i] = empty_space_count;
 
       if(best_packing.cummulative_empty_cells[i] < current_packing.cummulative_empty_cells[i])
@@ -124,8 +124,9 @@ void update_score (char * permutation[], size_t array_len){
 
    memcpy(&best_packing, &current_packing, sizeof(best_packing)); // save curren packing as best packing
    return;
+   #if 0
    /*
-   int best_empty_cells = count_empty_cells(best_packing.output, sizeof(best_packing.output));
+   int best_empty_cells = count_empty_cells(best_packing.buffer, sizeof(best_packing.buffer));
    int current_empty_cells = count_empty_cells(current_packing, sizeof(current_packing));
 
 
@@ -133,12 +134,12 @@ void update_score (char * permutation[], size_t array_len){
 
    for(int i=OUTPUT_ROWS-1; i >= 0; i--) {
       int current_row_empty_cells = count_empty_cells(&current_packing[i][0], OUTPUT_COLS);
-      int best_row_empty_cells = count_empty_cells(&best_packing.output[i][0], OUTPUT_COLS);
+      int best_row_empty_cells = count_empty_cells(&best_packing.buffer[i][0], OUTPUT_COLS);
       if(best_row_empty_cells < current_row_empty_cells)
          return;
    }
 
-   memcpy(best_packing.output, current_packing, sizeof(best_packing.output));
+   memcpy(best_packing.buffer, current_packing, sizeof(best_packing.buffer));
 */
 /*
    int current_empty_cells=count_empty_cells((const char*)current_packing, sizeof(current_packing));
@@ -156,7 +157,7 @@ void update_score (char * permutation[], size_t array_len){
          /*
          for(int i=0; i < row_index; i++) {
             int current_row_empty_cells = count_empty_cells(&current_packing[i][0], OUTPUT_COLS);
-            int best_row_empty_cells = count_empty_cells(&best_packing.output[i][0], OUTPUT_COLS);
+            int best_row_empty_cells = count_empty_cells(&best_packing.buffer[i][0], OUTPUT_COLS);
             if(best_row_empty_cells < current_row_empty_cells)
                return;
          } 
@@ -169,6 +170,7 @@ void update_score (char * permutation[], size_t array_len){
          best_packing.first_empty_cell = current_first_empty_cell;
          */
    }
+   #endif
 }
 
 
@@ -199,11 +201,11 @@ int count_empy_cells(char buffer[OUTPUT_COLS][OUTPUT_ROWS]){
 }
 */
 
-void initalize_output_buffer(packing_result_t * buffer){
+void initalize_output_buffer(packing_result_t * object){
    for(int i=0; i< OUTPUT_ROWS; i++){
-      memset(buffer->output[i], '+', OUTPUT_COLS);
-      buffer->output[i][OUTPUT_COLS] = '\0';
-      buffer->lines[i] = buffer->output[i];
+      memset(object->buffer[i], '+', OUTPUT_COLS);
+      object->buffer[i][OUTPUT_COLS] = '\0';
+      object->lines[i] = object->buffer[i];
    }
-   memset(buffer->cummulative_empty_cells, 100, sizeof(buffer->cummulative_empty_cells));
+   memset(object->cummulative_empty_cells, 100, sizeof(object->cummulative_empty_cells));
 }

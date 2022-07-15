@@ -5,13 +5,9 @@
 #define OUTPUT_COLS 10
 
 typedef struct{   
-   char output[OUTPUT_ROWS][OUTPUT_COLS+1];
+   char buffer[OUTPUT_ROWS][OUTPUT_COLS+1];
    char * lines[OUTPUT_ROWS];
    char cummulative_empty_cells[OUTPUT_ROWS];
-   int words;
-   int fill_level;
-   int empty_cells;
-   int first_empty_cell;
 } packing_result_t;
 
 extern packing_result_t best_packing;
@@ -97,6 +93,6 @@ int count_empty_cells(const char * buffer, size_t len);
 
 //void initalize_output_buffer(char data_buffer[OUTPUT_ROWS][OUTPUT_COLS+1], char * string_buffer[OUTPUT_ROWS]);
 
-void initalize_output_buffer(packing_result_t * buffer);
+void initalize_output_buffer(packing_result_t * object);
 
 #endif
