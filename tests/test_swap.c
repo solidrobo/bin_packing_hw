@@ -1,7 +1,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include "../source/util.h"
+
+#include "lib.h"
 
 int main(   int argc,           // Number of strings in array argv
             char *argv[],      // Array of command-line argument strings

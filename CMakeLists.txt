@@ -8,12 +8,33 @@ include(CTest)
 enable_testing()
 add_subdirectory(tests)
 
+
+
+# define library
+add_library(
+    lib
+    STATIC
+    source/lib/lib.c
+)
+
+target_include_directories(
+    lib
+    PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}/source/lib
+)
+
 # define source files
 add_executable(
     bin_packing 
     source/main.c
-    source/util.c
-    source/util.h
+)
+
+
+# link libaries
+target_link_libraries(
+    bin_packing
+    PUBLIC
+    lib
 )
 
 # set build type

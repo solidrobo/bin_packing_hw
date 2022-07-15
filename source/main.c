@@ -2,7 +2,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-#include "util.h"
+#include "lib.h"
 
 int main(   int argc, // Number of strings in array argv
             char *argv[],      // Array of command-line argument strings
@@ -67,7 +67,7 @@ int main(   int argc, // Number of strings in array argv
 
       if(en_verbose_mode)
          printf("\nFound packing!\n");
-         
+
       print_output(best_packing.buffer);  // output best packing
       
    } else {

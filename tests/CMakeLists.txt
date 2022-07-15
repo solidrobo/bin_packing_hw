@@ -3,8 +3,11 @@ find_package(Python REQUIRED)
 # define tests
 add_executable( test_swap 
   test_swap.c 
-  ${PROJECT_SOURCE_DIR}/source/util.c 
-  ${PROJECT_SOURCE_DIR}/source/util.h
+)
+
+target_link_libraries(
+  test_swap
+  lib
 )
 
 #example of a unit test using C
