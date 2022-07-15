@@ -4,8 +4,10 @@
 #define OUTPUT_ROWS 10
 #define OUTPUT_COLS 10
 
-typedef struct{
-   char output[OUTPUT_COLS][OUTPUT_ROWS];
+typedef struct{   
+   char output[OUTPUT_ROWS][OUTPUT_COLS+1];
+   char * lines[OUTPUT_ROWS];
+   char cummulative_empty_cells[OUTPUT_ROWS];
    int words;
    int fill_level;
    int empty_cells;
@@ -81,7 +83,7 @@ void permute(char * input[], int current_index, int array_len);
    Input:
       buffer - the output buffer to print
 */
-void print_output(char buffer[OUTPUT_COLS][OUTPUT_ROWS]);
+void print_output(char buffer[OUTPUT_ROWS][OUTPUT_COLS+1]);
 
 /*
    Convenience funtion to count number of "empty" cells.
@@ -89,6 +91,12 @@ void print_output(char buffer[OUTPUT_COLS][OUTPUT_ROWS]);
    Input:
       buffer - the output buffer to print
 */
-int count_empy_cells(char buffer[OUTPUT_COLS][OUTPUT_ROWS]);
+//int count_empy_cells(char buffer[OUTPUT_COLS][OUTPUT_ROWS]);
+
+int count_empty_cells(const char * buffer, size_t len);
+
+//void initalize_output_buffer(char data_buffer[OUTPUT_ROWS][OUTPUT_COLS+1], char * string_buffer[OUTPUT_ROWS]);
+
+void initalize_output_buffer(packing_result_t * buffer);
 
 #endif

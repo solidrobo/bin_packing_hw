@@ -23,7 +23,7 @@ int main(   int argc, // Number of strings in array argv
 
    const char *filename = argv[1];
    FILE * fp = fopen(filename, "r");
-   char file_buffer[OUTPUT_ROWS*OUTPUT_COLS];  // max number of characters to be displayed is 10x10
+   char file_buffer[OUTPUT_ROWS*OUTPUT_COLS*2];  // max number of characters to be displayed is 10x10 + up to 100 line endings
    char * word_list[OUTPUT_ROWS*OUTPUT_COLS]; // theoretical max number of words is also 10x10
    size_t word_count=0;
 
@@ -39,6 +39,8 @@ int main(   int argc, // Number of strings in array argv
          printf("No words found!\n");
          return -1;
       }
+
+      initalize_output_buffer(&best_packing); // initalize the output to be "empty"
 
       permute(word_list, 0, word_count-1); // find best packing by testing all permutations
 
