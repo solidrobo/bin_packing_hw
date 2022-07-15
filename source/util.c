@@ -1,11 +1,12 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <time.h>
 #include "util.h"
 
 // global variable to store current best result
 packing_result_t best_packing;
-
+int en_verbose_mode = 0;
 
 int read_data(FILE * file, char buffer[], size_t buffer_len){
    size_t read_bytes = 0;
@@ -61,18 +62,18 @@ int find_words(char input_buffer[], char * output_buffer[]){
 
 
 void swap_index(char * array[], int index_a, int index_b){
-    char * temp = array[index_a];
-    array[index_a] = array[index_b];
-    array[index_b] = temp;
-    __asm("nop");    //debug breakpoint
+   char * temp = array[index_a];
+   array[index_a] = array[index_b];
+   array[index_b] = temp;
 }
 
 
 void permute(char * input[], int current_index, int array_len) 
 {  
    int i;
-   if (current_index == array_len) 
+   if (current_index == array_len) {
       update_score(input, array_len+1);
+   }
    else
    { 
       for (i = current_index; i <= array_len; i++) 
@@ -84,20 +85,30 @@ void permute(char * input[], int current_index, int array_len)
    } 
 }
 
-
+clock_t prev_time_sec;
+unsigned long long permutation_count = 0;
+unsigned long long total_permutations = 1;
 void update_score (char * permutation[], size_t array_len){
    int word_index=0;
    int col_index=0;
    int row_index=0;
 
-/*
-   char current_packing[OUTPUT_ROWS][OUTPUT_COLS+1];             // create an "empty" output buffer
-   char * current_string[OUTPUT_ROWS];
-*/
    packing_result_t current_packing;
    initalize_output_buffer(&current_packing);
 
-   int tmp = 0;      // this keeps count of the most amount of empty cells per line
+   if(en_verbose_mode){
+      if(total_permutations == 1)
+         for(int i=1;i < array_len+1;i++)
+            total_permutations *= i;
+      permutation_count++;
+      clock_t current_time_sec = clock() / CLOCKS_PER_SEC;
+      clock_t time_diff = current_time_sec - prev_time_sec;
+      if(current_time_sec - prev_time_sec > 0 || 
+         permutation_count == total_permutations){
+         printf("\r%u / %u\r", permutation_count,total_permutations);
+         prev_time_sec = current_time_sec;
+      }
+   }
 
    while(row_index<OUTPUT_ROWS && word_index < array_len){     // pack permutation of string into cells 
       char * word = permutation[word_index++];
@@ -114,63 +125,16 @@ void update_score (char * permutation[], size_t array_len){
    }
 
    int empty_space_count = 0;
-   for(int i=0; i<OUTPUT_ROWS; i++){
+   for(int i=0; i<OUTPUT_ROWS; i++){      // calculate cummulative empty cells per row
       empty_space_count += count_empty_cells(current_packing.buffer[i], OUTPUT_COLS);
       current_packing.cummulative_empty_cells[i] = empty_space_count;
 
-      if(best_packing.cummulative_empty_cells[i] < current_packing.cummulative_empty_cells[i])
+      if(best_packing.cummulative_empty_cells[i] 
+            < current_packing.cummulative_empty_cells[i])  // compare current score to best and abort if current score is worse than it
          return;
    }
 
-   memcpy(&best_packing, &current_packing, sizeof(best_packing)); // save curren packing as best packing
-   return;
-   #if 0
-   /*
-   int best_empty_cells = count_empty_cells(best_packing.buffer, sizeof(best_packing.buffer));
-   int current_empty_cells = count_empty_cells(current_packing, sizeof(current_packing));
-
-
-   if(best_empty_cells < current_empty_cells)
-
-   for(int i=OUTPUT_ROWS-1; i >= 0; i--) {
-      int current_row_empty_cells = count_empty_cells(&current_packing[i][0], OUTPUT_COLS);
-      int best_row_empty_cells = count_empty_cells(&best_packing.buffer[i][0], OUTPUT_COLS);
-      if(best_row_empty_cells < current_row_empty_cells)
-         return;
-   }
-
-   memcpy(best_packing.buffer, current_packing, sizeof(best_packing.buffer));
-*/
-/*
-   int current_empty_cells=count_empty_cells((const char*)current_packing, sizeof(current_packing));
-   int current_first_empty_cell = strpbrk((const char *)current_packing, "+") - (char*)current_packing;
-   */
-   current_packing.words = word_index;
-   current_packing.fill_level = row_index;
-   if(
-      (current_packing.words >= best_packing.words) &&          // if current packing has at least as many words as best
-       (current_packing.fill_level <= best_packing.fill_level)     // and as good or lower fill level
-//      && (current_empty_cells >= best_packing.empty_cells)  // and same ammount of empty cells or better 
-      //&& (current_first_empty_cell > best_packing.first_empty_cell) // and first empty cell is higher
-      ){
-         int current_max_empty_cells = 0;
-         /*
-         for(int i=0; i < row_index; i++) {
-            int current_row_empty_cells = count_empty_cells(&current_packing[i][0], OUTPUT_COLS);
-            int best_row_empty_cells = count_empty_cells(&best_packing.buffer[i][0], OUTPUT_COLS);
-            if(best_row_empty_cells < current_row_empty_cells)
-               return;
-         } 
-         */
-         memcpy(&best_packing, &current_packing, sizeof(best_packing)); // save curren packing as best packing
-         /*
-         best_packing.empty_cells = current_empty_cells;
-         best_packing.words = word_index;
-         best_packing.fill_level = row_index;
-         best_packing.first_empty_cell = current_first_empty_cell;
-         */
-   }
-   #endif
+   memcpy(&best_packing, &current_packing, sizeof(best_packing)); // save current packing as best packing
 }
 
 
@@ -190,16 +154,6 @@ int count_empty_cells(const char * buffer, size_t len){
          count++;
    return count;
 }
-/*
-int count_empy_cells(char buffer[OUTPUT_COLS][OUTPUT_ROWS]){
-   int count=0;
-   for(int x=0; x<OUTPUT_ROWS; x++)
-      for(int y=0; y<OUTPUT_COLS; y++)
-         if(buffer[x][y]=='+')
-            count++;
-   return count;
-}
-*/
 
 void initalize_output_buffer(packing_result_t * object){
    for(int i=0; i< OUTPUT_ROWS; i++){

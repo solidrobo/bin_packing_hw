@@ -8,20 +8,38 @@ int main(   int argc, // Number of strings in array argv
             char *argv[],      // Array of command-line argument strings
             char **envp ){
 
+   char *filename;
+   char *argument;
    /*
       Input validation section 
    */
-
-   if(argc > 2){
-      printf("Illegal number of arguments [%d]. Please pass only the file path as an argument");
-      return -1;
+   switch (argc){
+      case 1:
+         printf("Please provide filepath with optional argument -v for verbose output!\n");
+         return -1;
+      case 2:
+         filename = argv[1];
+         break;
+      default:
+         if(argv[1][0] == '-'){
+            filename = argv[2];
+            argument = argv[1];
+         } else {
+            filename = argv[1];
+            argument = argv[2];
+         }
+         if(strcmp(argument, "-v") == 0){
+            en_verbose_mode = 1;
+         } else {
+            printf("Warning! Unknown argument [%s]\n", argument);
+         }
+         break;
    }
 
    /*
       Variables section
    */
 
-   const char *filename = argv[1];
    FILE * fp = fopen(filename, "r");
    char file_buffer[OUTPUT_ROWS*OUTPUT_COLS*2];  // max number of characters to be displayed is 10x10 + up to 100 line endings
    char * word_list[OUTPUT_ROWS*OUTPUT_COLS]; // theoretical max number of words is also 10x10
@@ -42,8 +60,14 @@ int main(   int argc, // Number of strings in array argv
 
       initalize_output_buffer(&best_packing); // initalize the output to be "empty"
 
+      if(en_verbose_mode)
+         printf("Looking for best packing\n");
+
       permute(word_list, 0, word_count-1); // find best packing by testing all permutations
 
+      if(en_verbose_mode)
+         printf("\nFound packing!\n");
+         
       print_output(best_packing.buffer);  // output best packing
       
    } else {

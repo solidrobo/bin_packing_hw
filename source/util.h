@@ -11,6 +11,7 @@ typedef struct{
 } packing_result_t;
 
 extern packing_result_t best_packing;
+extern int en_verbose_mode;
 
 /*
    Reads the file and sanitizes the data. Discards any byte that is not an ASCII
@@ -87,12 +88,14 @@ void print_output(char buffer[OUTPUT_ROWS][OUTPUT_COLS+1]);
    Input:
       buffer - the output buffer to print
 */
-//int count_empy_cells(char buffer[OUTPUT_COLS][OUTPUT_ROWS]);
-
 int count_empty_cells(const char * buffer, size_t len);
 
-//void initalize_output_buffer(char data_buffer[OUTPUT_ROWS][OUTPUT_COLS+1], char * string_buffer[OUTPUT_ROWS]);
+/*
+   Convenience funtion to initalize the packing_result_t object as "empty"
 
+   Input:
+      object - the object to be initalized
+*/
 void initalize_output_buffer(packing_result_t * object);
 
 #endif
